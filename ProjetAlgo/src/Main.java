@@ -27,7 +27,7 @@ public class Main {
 		
 		root.toString(root);
 		System.out.println(1/2);
-		System.out.println(root.search(3,root));
+		System.out.println(root.search(8,root));
 		
 	}
 

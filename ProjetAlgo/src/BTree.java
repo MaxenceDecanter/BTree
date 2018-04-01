@@ -83,18 +83,24 @@ public class BTree {
 		//boolean res=false;
 		if(tree == null){
 			res=false;
-		}else if(key < tree.getKey(0)){
+		}else if(key < tree.getKey(0)&& !tree.isLeaf(tree)){
 			System.out.println("Parcours du fils 0");
 			search(key, tree.getChild(0));
-		}else if(key> tree.getKey(tree.listKey.size()-1)){
+		}else if(key> tree.getKey(tree.listKey.size()-1) && !tree.isLeaf(tree)){
 			System.out.println("Parcours du fils n");
 			search(key, tree.getChild(tree.listKey.size()));
+		}else if(key> tree.getKey(tree.listKey.size()-1) && tree.isLeaf(tree)){
+			return false;
 		}else if(searchInNode(key,tree)==true){
 			System.out.println("Clause search vraie");
 			res=true;
 		}else{
-			System.out.println(treeToSearchIn);
-			search(key,treeToSearchIn);
+			if(!tree.isLeaf(tree)){
+				System.out.println(treeToSearchIn);
+				search(key,treeToSearchIn);
+			}else{
+				res = false;
+			}
 		}
 		System.out.println("res="+res);
 		return res;
@@ -123,7 +129,7 @@ public class BTree {
 			System.out.println("Clause dans noeud vrai");
 			treeToSearchIn = null;
 			return true;
-		}else{
+		}else if(!tree.isLeaf(tree)){
 			System.out.println("Abre a parcourir");
 			treeToSearchIn = tree.getChild(g);
 			System.out.println(treeToSearchIn);
