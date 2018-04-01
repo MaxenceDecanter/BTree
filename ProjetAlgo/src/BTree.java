@@ -13,6 +13,10 @@ public class BTree {
 		this.listChildren = tree;
 	}
 	
+	public void updateOrder(int n){
+		this.n = n;
+	}
+	
 	public int getKey(int index){
 		return listKey.get(index);
 	}
