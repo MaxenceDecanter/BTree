@@ -7,10 +7,28 @@ public class BTree {
 	int n =2;
 	BTree treeToSearchIn;
 	boolean res = false;
+	BTree returnTree;
+	BTree previousTree = null;
 	
 	public BTree(List<Integer> keys, List<BTree> tree){
 		this.listKey = keys;
 		this.listChildren = tree;
+	}
+	
+	public void createBTree(int key, BTree tree){
+		tree.addKey(key);
+	}
+	
+	public void printBTree(BTree tree){
+		System.out.println("Valeurs du noeud:");
+		for(int i=0; i<tree.listKey.size();i++){
+			System.out.println(tree.getKey(i));
+		}
+		if(!tree.isLeaf(tree)){
+			for(int i=0; i<tree.listChildren.size();i++){
+				printBTree(tree.getChild(i));
+			}
+		}
 	}
 	
 	public void updateOrder(int n){
@@ -33,8 +51,16 @@ public class BTree {
 		listKey.add(value);
 	}
 	
+	public void addKeyWithIndex(int key, int index){
+		listKey.add(index, key);
+	}
+	
 	public void addChild(BTree child){
 		this.listChildren.add(child);
+	}
+	
+	public void addChildWithIndex(int index, BTree tree){
+		listChildren.add(index, tree);
 	}
 	
 	public void removeKey(int index){
@@ -88,57 +114,111 @@ public class BTree {
 		if(tree == null){
 			res=false;
 		}else if(key < tree.getKey(0)&& !tree.isLeaf(tree)){
-			System.out.println("Parcours du fils 0");
 			search(key, tree.getChild(0));
 		}else if(key> tree.getKey(tree.listKey.size()-1) && !tree.isLeaf(tree)){
-			System.out.println("Parcours du fils n");
 			search(key, tree.getChild(tree.listKey.size()));
 		}else if(key> tree.getKey(tree.listKey.size()-1) && tree.isLeaf(tree)){
 			return false;
 		}else if(searchInNode(key,tree)==true){
-			System.out.println("Clause search vraie");
 			res=true;
 		}else{
 			if(!tree.isLeaf(tree)){
-				System.out.println(treeToSearchIn);
 				search(key,treeToSearchIn);
 			}else{
 				res = false;
 			}
 		}
-		System.out.println("res="+res);
 		return res;
 	}
 	
 	public boolean searchInNode(int key, BTree tree){
-		System.out.println("Recherche dans noeud");
 		int g = 0;
 		int d = tree.listKey.size();
-		System.out.println("d init="+d);
 		int m = 0;
 		
 		while(g!=d){
 			m = (g+d)/2;
-			System.out.println("m="+m);
 			if(tree.getKey(m) >= key){
 				d = m;
-				System.out.println("d="+d);
 			}else{
 				g = m+1;
-				System.out.println("g="+g);
 			}
 		}
 		
 		if(tree.getKey(g)==key){
-			System.out.println("Clause dans noeud vrai");
 			treeToSearchIn = null;
 			return true;
 		}else if(!tree.isLeaf(tree)){
-			System.out.println("Abre a parcourir");
 			treeToSearchIn = tree.getChild(g);
-			System.out.println(treeToSearchIn);
 		}
 		return false;
+	}
+	
+	public BTree insertPosition(int key, BTree tree){
+		if(tree==null){
+			returnTree = tree;
+		}
+		
+		return returnTree;
+	}
+	
+	public void split(BTree tree){
+		if(tree.listKey.size()<n){
+			previousTree = tree;
+			if(!tree.listChildren.isEmpty()){
+				for(int i=0; i<tree.listChildren.size(); i++){
+					split(tree.getChild(i));
+				}
+			}
+		}else if(tree.listKey.size()==n){
+			if(previousTree == null){
+				previousTree = new BTree(new ArrayList<Integer>(), new ArrayList<BTree>());
+				previousTree.addChild(tree);
+			}
+			int medianValue = tree.listKey.size()/2;
+			BTree newNode = new BTree(new ArrayList<Integer>(), new ArrayList<BTree>());
+			for(int i=medianValue+1; i<tree.listKey.size(); i++){
+				newNode.addKey(tree.getKey(i));
+			}
+			if(!tree.isLeaf(tree)){
+				int medianTree = tree.listChildren.size()/2;
+				for(int i=medianTree+1; i<tree.listChildren.size(); i++){
+					newNode.addChild(tree.getChild(i));
+					tree.removeChild(i);
+				}
+			}
+			previousTree.addKey(tree.getKey(medianValue));
+			previousTree.addChild(newNode);
+			/*while(!tree.isLeaf(tree)){
+				split(tree);
+			}*/
+		}
+	}
+	
+	public void insertKeyInNode(BTree tree, int key, int index){
+		tree.addKeyWithIndex(key, index);
+	}
+	
+	public void insertTreeInNode(BTree tree, BTree treeToInsert, int index){
+		tree.addChildWithIndex(index, treeToInsert);
+	}
+	
+	public void insert(int key, BTree tree){
+		if(key < tree.getKey(0)&& !tree.isLeaf(tree)){
+			insert(key, tree.getChild(0));
+		}else if(key> tree.getKey(tree.listKey.size()-1) && !tree.isLeaf(tree)){
+			insert(key, tree.getChild(tree.listKey.size()));
+		}else if(tree.isLeaf(tree)){
+			tree.addKey(key);
+		}else{
+			for(int i=1; i<tree.listKey.size()-1; i++){
+				if(key<tree.getKey(i)){
+					tree.getChild(i).addKey(key);
+				}else if(key>tree.getKey(i) && i==tree.listKey.size()-2){
+					tree.getChild(i+1).addKey(key);
+				}
+			}
+		}
 	}
 
 }
