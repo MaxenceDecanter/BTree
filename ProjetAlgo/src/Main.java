@@ -66,13 +66,13 @@ public class Main {
 		BTree tree9 = new BTree(l10,new ArrayList<BTree>());
 		tree2.addChild(tree9);
 		
-		//root.toString(root);
 		root.printBTree(root);
 		System.out.println(root.search(8,root));
-		root.insert(70, root);
-		root.insert(77, root);
+		root.insert(64, root);
+		//root.insert(77, root);
+		root.split(root);
 		root.printBTree(root);
-		//root.split(root);
+
 		
 		
 	}

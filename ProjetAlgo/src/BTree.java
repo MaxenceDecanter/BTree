@@ -4,7 +4,7 @@ public class BTree {
 	
 	List<Integer> listKey = new ArrayList<Integer>();
 	List<BTree> listChildren = new ArrayList<BTree>();
-	int n =2;
+	int n =4;
 	BTree treeToSearchIn;
 	boolean res = false;
 	BTree returnTree;
@@ -211,10 +211,18 @@ public class BTree {
 				root.addChild(right);
 				previousTree = root;
 			}else{
+				/*for(int i=0; i<previousTree.listKey.size();i++){
+					if(tree.getKey(medianIndex)<previousTree.getKey(i)){
+						previousTree.addKeyWithIndex(tree.getKey(medianIndex),i);
+					}else if(tree.getKey(medianIndex)>previousTree.getKey(i) && i==previousTree.listKey.size()-1){
+						previousTree.addKey(tree.getKey(medianIndex));
+					}
+				}*/
+				previousTree.addKey(tree.getKey(medianIndex));
 				previousTree.addKey(tree.getKey(medianIndex));
 				previousTree.removeChildTree(previousTree, tree);
-				previousTree.addChild(left);
-				previousTree.addChild(right);
+				previousTree.addChildWithIndex(0,left);
+				previousTree.addChildWithIndex(1,right);
 			}
 		}
 	}
