@@ -71,6 +71,14 @@ public class BTree {
 		listChildren.remove(index);
 	}
 	
+	public void removeChildTree(BTree tree, BTree treeToRemove){
+		for(int i=0; i<tree.listChildren.size(); i++){
+			if(tree.getChild(i) == treeToRemove){
+				tree.removeChild(i);
+			}
+		}
+	}
+	
 	public boolean isLeaf(BTree tree){
 		if(tree.listChildren.isEmpty()){
 			return true;
@@ -163,6 +171,7 @@ public class BTree {
 	}
 	
 	public void split(BTree tree){
+		int medianIndex;
 		if(tree.listKey.size()<n){
 			previousTree = tree;
 			if(!tree.listChildren.isEmpty()){
@@ -171,27 +180,42 @@ public class BTree {
 				}
 			}
 		}else if(tree.listKey.size()==n){
-			if(previousTree == null){
-				previousTree = new BTree(new ArrayList<Integer>(), new ArrayList<BTree>());
-				previousTree.addChild(tree);
+			medianIndex = tree.listKey.size()/2;
+			
+			BTree left = new BTree(new ArrayList<Integer>(), new ArrayList<BTree>());
+			for(int i=0; i<medianIndex; i++){
+				left.addKey(tree.getKey(i));
 			}
-			int medianValue = tree.listKey.size()/2;
-			BTree newNode = new BTree(new ArrayList<Integer>(), new ArrayList<BTree>());
-			for(int i=medianValue+1; i<tree.listKey.size(); i++){
-				newNode.addKey(tree.getKey(i));
-			}
-			if(!tree.isLeaf(tree)){
-				int medianTree = tree.listChildren.size()/2;
-				for(int i=medianTree+1; i<tree.listChildren.size(); i++){
-					newNode.addChild(tree.getChild(i));
-					tree.removeChild(i);
+			if(!tree.listChildren.isEmpty()){
+				for(int j=0; j<=medianIndex; j++){
+					BTree t = tree.getChild(j);
+					left.addChild(t);
 				}
 			}
-			previousTree.addKey(tree.getKey(medianValue));
-			previousTree.addChild(newNode);
-			/*while(!tree.isLeaf(tree)){
-				split(tree);
-			}*/
+			
+			BTree right = new BTree(new ArrayList<Integer>(), new ArrayList<BTree>());
+			for(int i=medianIndex+1; i<tree.listKey.size(); i++){
+				right.addKey(tree.getKey(i));
+			}
+			if(!tree.listChildren.isEmpty()){
+				for(int j=medianIndex+1; j<tree.listChildren.size(); j++){
+					BTree t = tree.getChild(j);
+					right.addChild(t);
+				}
+			}
+			
+			if(previousTree == null){
+				BTree root = new BTree(new ArrayList<Integer>(), new ArrayList<BTree>());
+				root.addKey(tree.getKey(medianIndex));
+				root.addChild(left);
+				root.addChild(right);
+				previousTree = root;
+			}else{
+				previousTree.addKey(tree.getKey(medianIndex));
+				previousTree.removeChildTree(previousTree, tree);
+				previousTree.addChild(left);
+				previousTree.addChild(right);
+			}
 		}
 	}
 	
